@@ -30,6 +30,7 @@ const TableRenderer = ({ query, data, setData }) => {
 					L.when((_, index) => index === i),
 					L.prop(key)
 				];
+				console.log(updateDataOptic, i, key);
 				const updatedData = L.set(updateDataOptic, e.target.value, data);
 				setData(updatedData);
 			};
@@ -44,13 +45,13 @@ const TableRenderer = ({ query, data, setData }) => {
 				</tr>
 			</thead>
 			<tbody>
-			{L.collect(optic, data).map((datum, i) =>
-				<tr key={`datum-${i}`}>
+			{L.collectAs((datum, index) => ({ datum, index }), optic, data).map(({datum, index}) =>
+				<tr key={`datum-${index}`}>
 				{L.collect([L.keys], datum).map(key =>
 					<td key={key}>
 						<input
 							value={ datum[key] }
-							onChange={onChange(i, key)}
+							onChange={onChange(index, key)}
 							/>
 					</td>
 				)}
