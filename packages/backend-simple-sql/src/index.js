@@ -49,7 +49,7 @@ const evalExpr = (expr, row) => {
 	};
 };
 
-const evalStatement = (statement, data) => {
+const evalStatement = (statement) => {
 	if(typeof statement.select == 'undefined')
 		throw new Error(`Can't parse statement, must be select statement`);
 
@@ -60,30 +60,15 @@ const evalStatement = (statement, data) => {
 			whereFilter = row => evalExpr(statement.where, row),
 			hasWhereStatement = (typeof statement.where !== 'undefined' && statement.where !== null);
 
-	if(typeof data[tableName] == 'undefined')
-		throw new Error(`Can't find table with name "${tableName}"`);
+	const wildcardSelect = statement.select.findIndex(field => field.type == 'wildcard') !== -1;
+	const returnFields = statement.select.flatMap(field => field.value);
 
-	if(data[tableName].length == 0)
-		return [];
-
-	if(typeof data[tableName][0] !== 'object')
-		throw new Error(`A table should be an array of object, not "${typeof data[tableName][0]}"`);
-			
-	// TODO: since this function depend on data; I should rewrite it into a part of the lens
-	let propsReturnFields;
-	if(statement.select.findIndex(field => field.type == 'wildcard') !== -1) {
-		const returnFieldsOptic = L.compose(tableName, L.limit(1, L.elems), L.keys);
-		const returnFields = L.collect(returnFieldsOptic, data); // <-- refactor so I don't need the data variable here
-		propsReturnFields = L.props(...returnFields);
-	} else {
-		propsReturnFields = L.props(...(statement.select.flatMap(field => field.value)));
-	}
-
-	if(hasWhereStatement) {
-		return [ tableName, L.elems, L.when(whereFilter), propsReturnFields ];
-	} else {
-		return [ tableName, L.elems, propsReturnFields ];
-	}
+	return /* optic */ [
+		tableName,
+		L.elems,
+		hasWhereStatement ? L.when(whereFilter) : null,
+		!wildcardSelect ? L.props(...returnFields) : null
+	].filter(itm => itm !== null);
 };
 
 const parseFromQuery = query => {
@@ -96,10 +81,12 @@ const parseFromQuery = query => {
 	return newParser.results[0];
 }
 
-const backendOptic = (query, data) => {
+const backendOptic = (query, result=null) => {
 	try {
-		const result = parseFromQuery(query);
-		return evalStatement(result.statements[0], data);
+		if(result === null)
+			result = parseFromQuery(query);
+
+		return evalStatement(result.statements[0]);
 	} catch(e) {
 		throw e;
 	}
@@ -107,7 +94,19 @@ const backendOptic = (query, data) => {
 
 const backend = (query, data) => {
 	try {
-		return L.collect(backendOptic(query, data), data);
+		const result = parseFromQuery(query);
+		const tableName = getTableName(result.statements[0]);
+
+		if(typeof data[tableName] == 'undefined')
+			throw new Error(`Can't find table with name "${tableName}"`);
+
+		if(data[tableName].length == 0)
+			return [];
+
+		if(typeof data[tableName][0] !== 'object')
+			throw new Error(`A table should be an array of object, not "${typeof data[tableName][0]}"`);
+				
+		return L.collect(backendOptic(query, result), data);
 	} catch(e) {
 		throw e;
 	}
