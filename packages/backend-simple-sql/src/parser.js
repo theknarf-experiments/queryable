@@ -1,6 +1,10 @@
-import { Parser, Grammar } from 'nearley';
-import grammar from './grammer.generated.js';
+const nearley = require('nearley'),
+		grammar = require('./grammer.generated.js');
 
-export default () => new Parser(
-	Grammar.fromCompiled(grammar)
+const parser = () => new nearley.Parser(
+	nearley.Grammar.fromCompiled(grammar)
 );
+
+module.exports = {
+	parser,
+};

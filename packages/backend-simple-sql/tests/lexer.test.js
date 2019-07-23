@@ -6,7 +6,7 @@ describe('lexer', () => {
 
 		lexer.reset(query);
 		expect(lexer.next()).toMatchObject({ type: 'select' });
-		expect(lexer.next()).toMatchObject({ type: 'all' });
+		expect(lexer.next()).toMatchObject({ type: 'wildcard' });
 		expect(lexer.next()).toMatchObject({ type: 'from' });
 		expect(lexer.next()).toMatchObject({ type: 'field',   value: 'Customers' });
 		expect(lexer.next()).toMatchObject({ type: 'where' });
@@ -25,7 +25,7 @@ describe('lexer', () => {
 
 		lexer.reset(query);
 		expect(lexer.next()).toMatchObject({ type: 'select' });
-		expect(lexer.next()).toMatchObject({ type: 'all' });
+		expect(lexer.next()).toMatchObject({ type: 'wildcard' });
 		expect(lexer.next()).toMatchObject({ type: 'from' });
 		expect(lexer.next()).toMatchObject({ type: 'field',   value: 'Customers' });
 		expect(lexer.next()).toMatchObject({ type: 'where' });

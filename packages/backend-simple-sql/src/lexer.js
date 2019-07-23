@@ -11,7 +11,7 @@ const lexer = moo.compile({
 	lparen:   '(',
 	rparen:   ')',
 	comma:    ',',
-	all:      '*',
+	wildcard: '*',
 	dot:      '.',
 	statementEnd: ';',
 	equal:    '=',

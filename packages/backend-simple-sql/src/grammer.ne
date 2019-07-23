@@ -1,37 +1,46 @@
 @{%
 const { lexer } = require('./lexer.js');
+const first = d => d[0];
+const second = d => d[1];
 %}
 
 @lexer lexer
 
-statement -> selectStatement %statementEnd
+main -> statements                                       {% ([ statements ]) => ({ statements }) %}
 
-selectStatement -> select from where:? orderBy:?
+statements -> statement:+                                {% first %}
 
-from -> %from fieldList
+statement -> selectStatement %statementEnd               {% first %}
 
-select -> %select %all
-       |  %select fieldList
+selectStatement -> select from where:? orderBy:?         {% ([ select, from, where, orderBy]) => ({ select, from, where, orderBy }) %}
 
-fieldList -> fieldList %comma fieldOptionalRename
-          |  fieldOptionalRename
+from -> %from fieldList                                  {% second %}
 
-fieldOptionalRename -> fieldOptionalRename %as field
-                    | field
+select -> %select %wildcard                              {% ([ _, wildcard]) => [ wildcard ] %}
+       |  %select fieldList                              {% second %}
 
-field -> %field %dot %field
-      |  %field
+fieldList -> fieldList %comma fieldOptionalRename        {% ([ fieldList, _, field ]) => [ ...fieldList, field] %}
+          |  fieldOptionalRename                         {% ([ field ]) => [ field ] %}
 
-where -> %where matchExpression
+fieldOptionalRename -> field %as field                   {% ([ field, _, field2 ]) => ({ field, as: field }) %}
+                    | field                              {% ([ field ]) => field %}
 
-matchExpression -> %not matchExpression
-                |  matchExpression %and matchExpression
-					 |  matchExpression %or matchExpression
-					 | fieldEqual
+where -> %where matchExpression                          {% second %}
 
-fieldEqual -> field %equal %string
-           |  field %equal %number
-			  |  field %equal field
+orderBy -> %orderBy field %asc                           {% ([ _, field, asc ])    => ({ op: 'orderBy', field, asc }) %}
+        |  %orderBy field %desc                          {% ([ _, field, desc ])   => ({ op: 'orderBy', field, desc }) %}
+		  |  %orderBy field                                {% ([ _, field ])         => ({ op: 'orderBy', field }) %}
 
-orderBy -> %orderBy %field orderAscOrDesc:?
-orderAscOrDesc -> %asc | %desc
+matchExpression -> %not matchExpression                  {% ([ _,    expr ])       => ({ op: 'not', expr }) %}
+                |  matchExpression %and matchExpression  {% ([ expr, _, expr2 ])   => ({ op: 'and', expr, expr2 }) %}
+					 |  matchExpression %or matchExpression   {% ([ expr, _, expr2 ])   => ({ op: 'or', expr, expr2 }) %}
+					 |  fieldEqual                            {% first %}
+
+fieldEqual -> field %equal expr                          {% ([expr,  _, expr2])    => ({ op: 'eq', expr, expr2 }) %}
+
+expr -> %string                                          {% first %}
+     |  %number                                          {% first %}
+	  |  field                                            {% first %}
+
+field -> %field %dot %field                              {% ([ field, _, field2 ]) => ({ field, dot: field2 }) %}
+      |  %field                                          {% ([ field ]) => field %}
