@@ -1,0 +1,16 @@
+{
+  "name": "queryable-isomorphicjsx",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "isomorphic-jsx": "^0.3.0",
+    "jest": "^24.8.0",
+    "queryable-core": "./packages/queryable-core",
+    "typescript": "^3.5.3",
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6"
+  }
+}
