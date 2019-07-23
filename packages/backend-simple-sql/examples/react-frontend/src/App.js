@@ -1,6 +1,7 @@
 import React from 'react';
 import Queryable from './queryable';
-import { backend as simpleSqlBackend } from 'backend-simple-sql';
+import { backendOptic } from 'backend-simple-sql';
+import * as L from 'partial.lenses';
 
 const exampleData = {
 	users: [
@@ -12,17 +13,23 @@ const exampleData = {
 		{ user: 1, owes: 2, amount: 10 /* dollars */ },
 		{ user: 1, owes: 3, amount: 20 /* dollars */ },
 		{ user: 2, owes: 3, amount: 15 /* dollars */ },
+	],
+	tables: [
+		{ name: 'users' },
+		{ name: 'depth' },
 	]
 };
 
 const TableRenderer = ({ data }) =>
 	<table>
 		<thead>
-			<tr>
-			{Object.keys(data[0]).map(key =>
-				<th key={key}>{ key }</th>
-			)}
-			</tr>
+			{data.length > 0 ?
+				<tr>
+				{Object.keys(data[0]).map(key =>
+					<th key={key}>{ key }</th>
+				)}
+				</tr>
+			: <></>}
 		</thead>
 		<tbody>
 		{data.map((datum, i) =>
@@ -35,10 +42,13 @@ const TableRenderer = ({ data }) =>
 		</tbody>
 	</table>;
 
+const lensBackend = (query, data) =>
+	L.collect(backendOptic(query), data);
+
 export default () => <>
 	<h1> Queryable </h1>
 	<Queryable
-		backend={simpleSqlBackend}
+		backend={lensBackend}
 		data={exampleData}
 		initialQuery='SELECT * FROM users;'
 		render={data => <TableRenderer data={data} />}

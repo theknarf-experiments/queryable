@@ -12,6 +12,7 @@ export default ({ backend, data, render, initialQuery=null }) => {
 			setError();
 		} catch(e) {
 			// TODO: add some kind of set timout here so that we don't show errors while people is typing
+			console.error(e);
 			setError(e.toString());
 		};
 	}, [ query, data, backend ]);

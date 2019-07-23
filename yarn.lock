@@ -1995,6 +1995,7 @@ backend-simple-sql@./packages/backend-simple-sql:
   version "1.0.0"
   dependencies:
     partial.lenses "^14.17.0"
+    ramda "^0.26.1"
 
 balanced-match@^1.0.0:
   version "1.0.0"
