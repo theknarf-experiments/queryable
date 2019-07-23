@@ -3,7 +3,22 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "dependencies": {
+  "scripts": {
+    "nearley": "nearleyc src/grammer.ne > src/grammer.generated.js",
+    "nearley:watch": "fswatch -o0 src/grammer.ne | xargs -0 -n 1 -I {} bash -c \"yarn run nearley\"",
+    "test": "jest"
+  },
+  "peerDependencies": {
     "queryable-core": "./packages/queryable-core"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "babel-jest": "^24.8.0",
+    "jest": "^24.8.0",
+    "moo": "^0.5.0",
+    "nearley": "^2.16.0",
+    "typescript": "^3.5.3"
   }
 }
