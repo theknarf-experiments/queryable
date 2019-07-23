@@ -1,4 +1,6 @@
 const { parser } = require('./parser');
+const L = require('partial.lenses');
+const R = require('ramda');
 
 const getTableName = (statement) => {
 	if(typeof statement.from == 'undefined' || statement.from.length < 1)
@@ -17,7 +19,7 @@ const findReturnFields = (statement, data) =>
 	statement.select.flatMap(field => {
 		switch(field.type) {
 			case 'field':
-				return field;
+				return field.value;
 			case 'wildcard':
 				const tableName = getTableName(statement);
 				if(typeof data[tableName] == 'undefined')
@@ -30,16 +32,6 @@ const findReturnFields = (statement, data) =>
 				return Object.keys(data[tableName][0]);
 		}
 	});
-
-const filterColumns = (table, returnFields) => table.map(row => {
-	const returnRow = {};
-	returnFields.forEach(name => {
-		if(typeof row[name] == 'undefined')
-			throw new Error(`No column with name '${name}' in current row`);
-		returnRow[name] = row[name];
-	});
-	return returnRow;
-});
 
 const exprToValue = (expr, row) => {
 	switch(expr.type) {
@@ -75,27 +67,25 @@ const evalExpr = (expr, row) => {
 	};
 };
 
-const filterWhere = (statement, table) => {
-	if(typeof statement.where == 'array')
-		throw new Error('Multiple where clauses not supported, try using AND');
-
-	if(typeof statement.where == 'undefined' || statement.where == null)
-		return table;
-
-	const whereFilter = row => evalExpr(statement.where, row);
-	return table.filter(whereFilter);
-}
-
 const evalStatement = (statement, data) => {
 	if(typeof statement.select == 'undefined')
 		throw new Error(`Can't parse statement, must be select statement`);
 
+	if(typeof statement.where == 'array')
+		throw new Error('Multiple where clauses not supported, try using AND');
+	
+	// TODO: since this function depend on data; I should rewrite it into a part of the lens
 	const returnFields = findReturnFields(statement, data);
-	let table = data[getTableName(statement)]
-		
-	table = filterWhere(statement, table);
 
-	return filterColumns(table, returnFields);
+	const tableName = getTableName(statement),
+			whereFilter = row => evalExpr(statement.where, row),
+			hasWhereStatement = (typeof statement.where !== 'undefined' && statement.where !== null);
+
+	if(hasWhereStatement) {
+		return L.collect([ tableName, L.elems, L.when(whereFilter), L.props(...returnFields) ], data);
+	} else {
+		return L.collect([ tableName, L.elems, L.props(...returnFields) ], data);
+	}
 };
 
 const backend = (query, data) => {
@@ -107,13 +97,7 @@ const backend = (query, data) => {
 			throw new Error('No parse results');
 
 		const { statements } = newParser.results[0];
-
-		let working_data = data;
-		statements.forEach(statement => {
-			working_data = evalStatement(statement, working_data);
-		});
-
-		return working_data;
+		return evalStatement(statements[0], data);
 	} catch(e) {
 		throw e;
 	}

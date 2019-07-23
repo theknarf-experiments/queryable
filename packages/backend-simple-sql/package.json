@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "nearleyc src/grammer.ne > src/grammer.generated.js",
-	 "nearley": "yarn run prepare",
+    "nearley": "yarn run prepare",
     "nearley:watch": "fswatch -o0 src/grammer.ne | xargs -0 -n 1 -I {} bash -c \"yarn run nearley\"",
     "test": "jest"
   },
@@ -21,5 +21,9 @@
     "moo": "^0.5.0",
     "nearley": "^2.16.0",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "partial.lenses": "^14.17.0",
+    "ramda": "^0.26.1"
   }
 }
