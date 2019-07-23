@@ -1,7 +1,5 @@
 import React from 'react';
 import Queryable from './queryable';
-import { backendOptic } from 'backend-simple-sql';
-import * as L from 'partial.lenses';
 
 const exampleData = {
 	users: [
@@ -20,37 +18,12 @@ const exampleData = {
 	]
 };
 
-const TableRenderer = ({ data }) =>
-	<table>
-		<thead>
-			{data.length > 0 ?
-				<tr>
-				{Object.keys(data[0]).map(key =>
-					<th key={key}>{ key }</th>
-				)}
-				</tr>
-			: <></>}
-		</thead>
-		<tbody>
-		{data.map((datum, i) =>
-			<tr key={`datum-${i}`}>
-			{Object.keys(datum).map(key =>
-				<td key={key}>{ datum[key] }</td>
-			)}
-			</tr>
-		)}
-		</tbody>
-	</table>;
-
-const lensBackend = (query, data) =>
-	L.collect(backendOptic(query), data);
+console.log('exampleData', exampleData);
 
 export default () => <>
 	<h1> Queryable </h1>
 	<Queryable
-		backend={lensBackend}
-		data={exampleData}
+		initialData={exampleData}
 		initialQuery='SELECT * FROM users;'
-		render={data => <TableRenderer data={data} />}
 		/>
 </>;
