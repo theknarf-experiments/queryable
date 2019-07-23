@@ -6,10 +6,32 @@ const { lexer } = require('./lexer.js');
 
 statement -> selectStatement %statementEnd
 
-selectStatement -> %keyword %all from where
+selectStatement -> select from where:? orderBy:?
 
-from -> %keyword %field
+from -> %from fieldList
 
-where -> %keyword fieldEqual %keyword fieldEqual
+select -> %select %all
+       |  %select fieldList
 
-fieldEqual -> %field %equal %string
+fieldList -> fieldList %comma fieldOptionalRename
+          |  fieldOptionalRename
+
+fieldOptionalRename -> fieldOptionalRename %as field
+                    | field
+
+field -> %field %dot %field
+      |  %field
+
+where -> %where matchExpression
+
+matchExpression -> %not matchExpression
+                |  matchExpression %and matchExpression
+					 |  matchExpression %or matchExpression
+					 | fieldEqual
+
+fieldEqual -> field %equal %string
+           |  field %equal %number
+			  |  field %equal field
+
+orderBy -> %orderBy %field orderAscOrDesc:?
+orderAscOrDesc -> %asc | %desc
