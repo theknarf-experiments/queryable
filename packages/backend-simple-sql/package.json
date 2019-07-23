@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "nearley": "nearleyc src/grammer.ne > src/grammer.generated.js",
+    "prepare": "nearleyc src/grammer.ne > src/grammer.generated.js",
+	 "nearley": "yarn run prepare",
     "nearley:watch": "fswatch -o0 src/grammer.ne | xargs -0 -n 1 -I {} bash -c \"yarn run nearley\"",
     "test": "jest"
   },

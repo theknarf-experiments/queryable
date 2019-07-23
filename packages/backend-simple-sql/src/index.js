@@ -63,6 +63,9 @@ const evalExpr = (expr, row) => {
 		case 'and':
 			return evalExpr(expr.expr, row) && evalExpr(expr.expr2, row);
 
+		case 'not':
+			return !( evalExpr(expr.expr, row) );
+
 		case 'eq':
 			return exprToValue(expr.expr, row) == exprToValue(expr.expr2, row);
 			return evalEq(expr, row);

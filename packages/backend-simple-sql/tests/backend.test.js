@@ -82,4 +82,15 @@ describe('backend', () => {
 			]);
 		}).not.toThrow();
 	});
+
+	test('select query with where not clause', () => {
+		expect(() => {
+			const query = `select CustomerName from Customers where not City='Bergen';`;
+			const result = backend(query, data);
+
+			expect(result).toEqual([
+				{ CustomerName: 'Dave' },
+			]);
+		}).not.toThrow();
+	});
 });
