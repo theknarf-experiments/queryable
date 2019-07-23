@@ -11,7 +11,7 @@ npm install --save queryable-core queryable-react
 ```JSX
 import React from 'react';
 import Queryable from 'queryable-react';
-import simpleSqlBackend from 'simple-sql-backend';
+import simpleSqlBackend from 'backend-simple-sql';
 
 const exampleData = {
 	users: [
@@ -24,7 +24,7 @@ const exampleData = {
 		{ user: 1, owes: 3, amount: 20 /* dollars */ },
 		{ user: 2, owes: 3, amount: 15 /* dollars */ },
 	]
-}
+};
 
 const TableRenderer = ({ data }) =>
 	<table>
@@ -40,7 +40,7 @@ const TableRenderer = ({ data }) =>
 		)}
 		</tr>
 		)}
-	</table>
+	</table>;
 
 export default () => <>
 	<h1> Queryable </h1>

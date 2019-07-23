@@ -10,7 +10,7 @@ main -> statements                                       {% ([ statements ]) => 
 
 statements -> statement:+                                {% first %}
 
-statement -> selectStatement %statementEnd               {% first %}
+statement -> selectStatement %statementEnd:?             {% first %}
 
 selectStatement -> select from where:? orderBy:?         {% ([ select, from, where, orderBy]) => ({ select, from, where, orderBy }) %}
 
