@@ -53,4 +53,33 @@ describe('backend', () => {
 			]);
 		}).not.toThrow();
 	});
+	test('select query with where clause', () => {
+		expect(() => {
+			const query = `select CustomerName from Customers where City="Oslo";`;
+			const result = backend(query, data);
+
+			expect(result).toEqual([
+				{ CustomerName: 'Dave' },
+			]);
+		}).not.toThrow();
+		expect(() => {
+			const query = `select CustomerName from Customers where City="Bergen";`;
+			const result = backend(query, data);
+
+			expect(result).toEqual([
+				{ CustomerName: 'Bob' },
+				{ CustomerName: 'Hanna' },
+			]);
+		}).not.toThrow();
+		expect(() => {
+			const query = `select CustomerName from Customers where City=City;`; // TODO: is this even legal SQL?
+			const result = backend(query, data);
+
+			expect(result).toEqual([
+				{ CustomerName: 'Dave' },
+				{ CustomerName: 'Bob' },
+				{ CustomerName: 'Hanna' },
+			]);
+		}).not.toThrow();
+	});
 });

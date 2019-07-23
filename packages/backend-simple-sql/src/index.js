@@ -13,11 +13,8 @@ const getTableName = (statement) => {
 	return statement.from[0].text;
 };
 
-const evalStatement = (statement, data) => {
-	if(typeof statement.select == 'undefined')
-		throw new Error(`Can't parse statement, must be select statement`);
-
-	const returnFields = statement.select.flatMap(field => {
+const findReturnFields = (statement, data) =>
+	statement.select.flatMap(field => {
 		switch(field.type) {
 			case 'field':
 				return field;
@@ -34,15 +31,68 @@ const evalStatement = (statement, data) => {
 		}
 	});
 
-	return data[getTableName(statement)].map(row => {
-		const returnRow = {};
-		returnFields.forEach(name => {
-			if(typeof row[name] == 'undefined')
-				throw new Error(`No column with name '${name}' in current row`);
-			returnRow[name] = row[name];
-		});
-		return returnRow;
+const filterColumns = (table, returnFields) => table.map(row => {
+	const returnRow = {};
+	returnFields.forEach(name => {
+		if(typeof row[name] == 'undefined')
+			throw new Error(`No column with name '${name}' in current row`);
+		returnRow[name] = row[name];
 	});
+	return returnRow;
+});
+
+const exprToValue = (expr, row) => {
+	switch(expr.type) {
+		case 'string':
+		case 'number':
+			return expr.value;
+
+		case 'field':
+			return row[ expr.value ];
+
+		default:
+			throw new Error(`Expression of type '${expr.type}' don't have a toValue implementation yet`);
+	}
+}
+
+const evalExpr = (expr, row) => {
+	switch(expr.op) {
+		case 'or':
+			return evalExpr(expr.expr, row) || evalExpr(expr.expr2, row);
+
+		case 'and':
+			return evalExpr(expr.expr, row) && evalExpr(expr.expr2, row);
+
+		case 'eq':
+			return exprToValue(expr.expr, row) == exprToValue(expr.expr2, row);
+			return evalEq(expr, row);
+
+		default:
+			throw new Error(`Op '${expr.op}' not implemented yet`);
+	};
+};
+
+const filterWhere = (statement, table) => {
+	if(typeof statement.where == 'array')
+		throw new Error('Multiple where clauses not supported, try using AND');
+
+	if(typeof statement.where == 'undefined' || statement.where == null)
+		return table;
+
+	const whereFilter = row => evalExpr(statement.where, row);
+	return table.filter(whereFilter);
+}
+
+const evalStatement = (statement, data) => {
+	if(typeof statement.select == 'undefined')
+		throw new Error(`Can't parse statement, must be select statement`);
+
+	const returnFields = findReturnFields(statement, data);
+	let table = data[getTableName(statement)]
+		
+	table = filterWhere(statement, table);
+
+	return filterColumns(table, returnFields);
 };
 
 const backend = (query, data) => {

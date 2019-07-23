@@ -51,6 +51,12 @@ describe('parser', () => {
 		expect(() => {
 			newParser.feed(query);
 		}).not.toThrow();
+
+		const statement = newParser.results[0].statements[0];
+		expect(statement).toHaveProperty('where');
+		expect(statement.where).toMatchObject({ op: 'or' });
+		expect(statement.where.expr).toMatchObject({ op: 'eq' });
+		expect(statement.where.expr2).toMatchObject({ op: 'eq' });
 	});
 	test('select query with where not clause', () => {
 		const query = `select * from Customers where not Country='Germany';`;
