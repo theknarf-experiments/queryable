@@ -82,27 +82,40 @@ const evalStatement = (statement, data) => {
 			hasWhereStatement = (typeof statement.where !== 'undefined' && statement.where !== null);
 
 	if(hasWhereStatement) {
-		return L.collect([ tableName, L.elems, L.when(whereFilter), L.props(...returnFields) ], data);
+		return [ tableName, L.elems, L.when(whereFilter), L.props(...returnFields) ];
 	} else {
-		return L.collect([ tableName, L.elems, L.props(...returnFields) ], data);
+		return [ tableName, L.elems, L.props(...returnFields) ];
+	}
+};
+
+const parseFromQuery = query => {
+	const newParser = parser();
+	newParser.feed(query);
+
+	if(newParser.results.length !== 1)
+		throw new Error('No parse results');
+
+	return newParser.results[0];
+}
+
+const backendOptic = (query, data) => {
+	try {
+		const result = parseFromQuery(query);
+		return evalStatement(result.statements[0], data);
+	} catch(e) {
+		throw e;
 	}
 };
 
 const backend = (query, data) => {
 	try {
-		const newParser = parser();
-		newParser.feed(query);
-
-		if(newParser.results.length !== 1)
-			throw new Error('No parse results');
-
-		const { statements } = newParser.results[0];
-		return evalStatement(statements[0], data);
+		return L.collect(backendOptic(query, data), data);
 	} catch(e) {
 		throw e;
 	}
 };
 
 module.exports = {
+	backendOptic,
 	backend,
 };
