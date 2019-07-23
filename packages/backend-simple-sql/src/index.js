@@ -15,24 +15,6 @@ const getTableName = (statement) => {
 	return statement.from[0].text;
 };
 
-const findReturnFields = (statement, data) =>
-	statement.select.flatMap(field => {
-		switch(field.type) {
-			case 'field':
-				return field.value;
-			case 'wildcard':
-				const tableName = getTableName(statement);
-				if(typeof data[tableName] == 'undefined')
-					throw new Error(`Can't find table with name "${tableName}"`);
-				if(data[tableName].length == 0)
-					return [];
-				if(typeof data[tableName][0] !== 'object')
-					throw new Error(`A table should be an array of object, not "${typeof data[tableName][0]}"`);
-				
-				return Object.keys(data[tableName][0]);
-		}
-	});
-
 const exprToValue = (expr, row) => {
 	switch(expr.type) {
 		case 'string':
@@ -74,17 +56,33 @@ const evalStatement = (statement, data) => {
 	if(typeof statement.where == 'array')
 		throw new Error('Multiple where clauses not supported, try using AND');
 	
-	// TODO: since this function depend on data; I should rewrite it into a part of the lens
-	const returnFields = findReturnFields(statement, data);
-
 	const tableName = getTableName(statement),
 			whereFilter = row => evalExpr(statement.where, row),
 			hasWhereStatement = (typeof statement.where !== 'undefined' && statement.where !== null);
 
-	if(hasWhereStatement) {
-		return [ tableName, L.elems, L.when(whereFilter), L.props(...returnFields) ];
+	if(typeof data[tableName] == 'undefined')
+		throw new Error(`Can't find table with name "${tableName}"`);
+
+	if(data[tableName].length == 0)
+		return [];
+
+	if(typeof data[tableName][0] !== 'object')
+		throw new Error(`A table should be an array of object, not "${typeof data[tableName][0]}"`);
+			
+	// TODO: since this function depend on data; I should rewrite it into a part of the lens
+	let propsReturnFields;
+	if(statement.select.findIndex(field => field.type == 'wildcard') !== -1) {
+		const returnFieldsOptic = L.compose(tableName, L.limit(1, L.elems), L.keys);
+		const returnFields = L.collect(returnFieldsOptic, data); // <-- refactor so I don't need the data variable here
+		propsReturnFields = L.props(...returnFields);
 	} else {
-		return [ tableName, L.elems, L.props(...returnFields) ];
+		propsReturnFields = L.props(...(statement.select.flatMap(field => field.value)));
+	}
+
+	if(hasWhereStatement) {
+		return [ tableName, L.elems, L.when(whereFilter), propsReturnFields ];
+	} else {
+		return [ tableName, L.elems, propsReturnFields ];
 	}
 };
 
