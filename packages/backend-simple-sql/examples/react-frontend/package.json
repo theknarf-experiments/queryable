@@ -2,6 +2,7 @@
   "name": "react-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://experiments.theknarf.com/queryable/",
   "dependencies": {
     "backend-simple-sql": "./packages/backend-simple-sql",
     "gh-pages": "^2.0.1",
