@@ -18,8 +18,6 @@ const exampleData = {
 	]
 };
 
-console.log('exampleData', exampleData);
-
 export default () => <>
 	<h1> Queryable </h1>
 	<Queryable

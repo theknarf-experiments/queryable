@@ -30,7 +30,6 @@ const TableRenderer = ({ query, data, setData }) => {
 					L.when((_, index) => index === i),
 					L.prop(key)
 				];
-				console.log(updateDataOptic, i, key);
 				const updatedData = L.set(updateDataOptic, e.target.value, data);
 				setData(updatedData);
 			};
