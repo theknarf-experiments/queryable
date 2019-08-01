@@ -16,5 +16,5 @@ Project                 | Description
 
 Project            | Description
 -------            | -----------
-[backend-simple-sql](./packages/backend-simple-sql) | A simple sql backen dimplementation for queryable
+[SimpleQL](./packages/simpleql) | A simple sql backen dimplementation for queryable
 backend-datalog    | To be added

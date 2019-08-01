@@ -1,5 +1,5 @@
 {
-  "name": "backend-simple-sql",
+  "name": "@queryable/simpleql",
   "version": "1.0.0",
   "main": "src/index.js",
   "license": "MIT",

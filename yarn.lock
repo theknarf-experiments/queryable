@@ -1998,7 +1998,7 @@ babylon@^6.18.0:
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
 
-backend-simple-sql@./packages/backend-simple-sql:
+backend-simple-sql@./packages/simpleql:
   version "1.0.0"
   dependencies:
     partial.lenses "^14.17.0"
