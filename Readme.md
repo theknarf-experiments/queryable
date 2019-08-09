@@ -5,16 +5,12 @@ Queryable is a library for building UI's over queryable data.
 
 ## Projects
 
-Project                 | Description
--------                 | -----------
-[queryable-core](./packages/queryable-core)          | Implements the core interfaces making up Queryable
-[queryable-react](./packages/queryable-react)         | React components based on queryable-core
-[queryable-vue](./packages/queryable-vue)           | Vue components based on queryable-core
-[queryable-isomorphicjsx](./packages/queryable-isomorphicjsx) | IsomorphixJSX components based on queryable-core
-
-### Backends
-
-Project            | Description
--------            | -----------
-[SimpleQL](./packages/simpleql) | A simple sql backen dimplementation for queryable
-backend-datalog    | To be added
+Project                                        | Type | Description
+-------                                        | ---- | -----------
+[@queryable/core](./packages/queryable-core)   | Core | Implements the core interfaces making up Queryable
+[@queryable/react](./packages/queryable-react) | Frontend | React components based on queryable-core
+[@queryable/vue](./packages/queryable-vue)     | Frontend | Vue components based on queryable-core
+[@queryable/isomorphicjsx](./packages/queryable-isomorphicjsx) | Frontend | IsomorphixJSX components based on queryable-core
+[@queryable/SimpleQL](./packages/simpleql)     | Backend | A simple sql backen dimplementation for queryable
+[@queryable/jq](./packages/backend-jq)         | Backend | A partial implementation of the json query language called Jq for Queryable
+Datalog                                        | Backend | To be added

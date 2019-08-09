@@ -1,8 +1,8 @@
 {
-  "name": "backend-jq",
+  "name": "@queryable/jq",
   "version": "1.0.0",
   "description": "A partial reimplementation of the json query language called [jq](https://stedolan.github.io/jq/) as a backend for Queryable.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest",
 	 "prepare": "yarn run nearley",
