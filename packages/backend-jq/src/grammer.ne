@@ -6,34 +6,49 @@ const second = d => d[1];
 
 @lexer lexer
 
-main -> filters %comma filters
-     |  filters
+main            -> arrayConstruct
+                |  objectConstruct
+                |  filters
 
-filters -> filters %pipe exprM
-        |  exprM
+arrayConstruct  -> %lbracket filters %rbracket
 
-exprM  -> exprM expr
-       | expr
+objectConstruct -> %lcurly objectArgs %rcurly
 
-expr   -> exprB
-		 |  expr %optional
-		 |  %lbracket exprM %rbracket
-		 |  %lparen exprM %rparen
-		 |  exprM %addition exprM
-		 |  exprM %subtraction exprM
-		 |  exprM %multiplication exprM
-		 |  exprM %division exprM
+objectArgs      -> objectArgs %comma objectArg
+                |  objectArg
 
-exprB ->  %descend
-       |  %identity
-		 |  %null
-		 |  func
-       |  %string
-		 |  %number
-       |  %field
-		 |  %number %colon %number
-		 |  %lbracket %rbracket
+objectArg       -> objectKey %colon exprM
+                |  %field
 
-func  -> %length
-      |  %utf8bytelength
-		|  %keys
+objectKey       -> %field
+                |  %lbracket exprM %rbracket
+
+filters ->  filters %comma exprM
+        |   exprM
+
+exprM   ->  exprM %pipe expr
+        |   exprM expr
+        |   expr
+
+expr    ->  exprB
+		  |   expr %optional
+		  |   %lbracket exprM %rbracket
+		  |   %lparen exprM %rparen
+		  |   exprM %addition exprM
+		  |   exprM %subtraction exprM
+		  |   exprM %multiplication exprM
+		  |   exprM %division exprM
+
+exprB   ->  %descend
+        |   %identity
+		  |   %null
+		  |   func
+        |   %string
+		  |   %number
+        |   %field
+		  |   %number %colon %number
+		  |   %lbracket %rbracket
+
+func    ->  %length
+        |   %utf8bytelength
+		  |   %keys

@@ -83,7 +83,6 @@ describe('parser', () => {
 		expect(() => parser().feed(query)).not.toThrow();
 	});
 
-	/*
 	test('Array construction: [.foo, .bar, .baz], [.items[].name]', () => {
 		const query1 = '[.foo, .bar, .baz]',
 				query2 = '[.items[].name]';
@@ -96,8 +95,6 @@ describe('parser', () => {
 		const query = '{foo: .bar}';
 		expect(() => parser().feed(query)).not.toThrow();
 	});
-	// TODO: not implemented yet / broken
-	// */
 	
 	test('Recursive Descent: ..|.a?', () => {
 		const query = '..|.a?';
