@@ -4,7 +4,10 @@
   "description": "A partial reimplementation of the json query language called [jq](https://stedolan.github.io/jq/) as a backend for Queryable.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+	 "prepare": "yarn run nearley",
+	 "nearley": "nearleyc src/grammer.ne > src/grammer.generated.js",
+	 "nearley:watch": "fswatch -o0 src/grammer.ne | xargs -0 -n 1 -I {} bash -c \"yarn run nearley\""
   },
   "keywords": [],
   "author": "Frank Lyder Bredland <fl@nyggen.com>",

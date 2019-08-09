@@ -3,9 +3,7 @@ import { lexer } from '../src/lexer';
 // Tests based on: https://stedolan.github.io/jq/manual/#Basicfilters
 describe('lexer', () => {
 	test('identity: .', () => {
-		const query = '.';
-
-		lexer.reset(query);
+		lexer.reset('.');
 		expect(lexer.next()).toMatchObject({ type: 'identity' });
 		expect(lexer.next()).toBeUndefined();
 	});
@@ -64,17 +62,6 @@ describe('lexer', () => {
 		expect(lexer.next()).toBeUndefined();
 	});
 
-	/*
-	test('Unvalid object-identifier-index: .foo::bar', () => {
-		lexer.reset('.foo::bar');
-		expect(lexer.next()).toMatchObject({ type: 'identity' });
-		expect(lexer.next()).toMatchObject({ type: 'field', value: 'foo' });
-		expect(() => lexer.next()).toThrow(); // Parsing :: is invalid and should throw
-	});
-	// eeh, this is valid from the lexer maybe? its just two colon symbols.
-	// TODO: move test to the parser instead
-	//*/
-
 	test('Optional Object Identifier-Index: .foo?', () => {
 		lexer.reset('.foo?');
 		expect(lexer.next()).toMatchObject({ type: 'identity' });
@@ -99,7 +86,7 @@ describe('lexer', () => {
 		expect(lexer.next()).toBeUndefined();
 	});
 
-	test('Arry/String Slice: .[10:15]', () => {
+	test('Array / String Slice: .[10:15]', () => {
 		lexer.reset('.[10:15]');
 		expect(lexer.next()).toMatchObject({ type: 'identity' });
 		expect(lexer.next()).toMatchObject({ type: 'lbracket' });
