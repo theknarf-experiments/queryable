@@ -1,0 +1,22 @@
+{
+  "name": "backend-jq",
+  "version": "1.0.0",
+  "description": "A partial reimplementation of the json query language called [jq](https://stedolan.github.io/jq/) as a backend for Queryable.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Frank Lyder Bredland <fl@nyggen.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "jest": "^24.8.0",
+    "moo": "^0.5.0",
+    "nearley": "^2.18.0"
+  },
+  "dependencies": {
+    "partial.lenses": "^14.17.0"
+  }
+}
